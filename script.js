@@ -1,3 +1,27 @@
+const appData = {
+  "usuario": {
+    "id": "user001",
+    "nome": "Visitante",
+    "configuracoes": {
+      "tema": "escuro",
+      "idioma": "pt-BR"
+    },
+    "favoritos": []
+  },
+
+  "pokemons": [
+    {
+      "id": 1,
+      "nome": "Bulbasaur",
+      "tipos": ["grama", "veneno"],
+  "altura": 0.7,
+  "peso": 6.9,
+  "descricao": "Uma estranha semente foi plantada em suas costas no nascimento.",
+  "evolucoes": [{ "id": 2, "nome": "Ivysaur" }, { "id": 3, "nome": "Venusaur" }]
+}
+  ]
+}
+
 // Adicionar favorito
 function adicionarFavorito(pokemonId) {
   if (!appData.usuario.favoritos.includes(pokemonId)) {

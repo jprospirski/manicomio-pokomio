@@ -1,10 +1,9 @@
 # 📌 Pokômio – Pokédex Interativa
 
 ## 📖 Sobre o Projeto
-O **Pokômio** é uma aplicação web que simula uma **Pokédex interativa**, permitindo visualizar Pokémons com suas informações principais (nome, imagem, tipos e dados básicos).  
-O sistema também permite ao usuário **favoritar Pokémons** e manter suas preferências salvas no navegador, mesmo após fechar e reabrir a página.
+O **Pokômio** é uma aplicação web que simula uma **Pokédex interativa**, permitindo visualizar Pokémons com suas informações principais. O sistema também permite ao usuário **favoritar Pokémons** e manter suas preferências salvas no navegador, mesmo após fechar e reabrir a página.
 
-Este projeto foi desenvolvido como parte da disciplina de **Engenharia de Software** no curso de **Ciência da Computação**, seguindo as etapas de:
+Este projeto foi desenvolvido como um projeto do curso de **Engenharia de Software**, seguindo as etapas de:
 - Levantamento de requisitos
 - Protótipos de baixa e alta fidelidade
 - Modelagem de dados (JSON)
@@ -12,9 +11,18 @@ Este projeto foi desenvolvido como parte da disciplina de **Engenharia de Softwa
 
 ---
 
+## 👨‍💻 Integrantes
+
+- Cauã Buch Domingues
+- Christopher Adam Oliveira dos Santos
+- João Pedro Rospirski Pegorini
+- João Rafael Tedesqui
+- Leonardo Barth
+
+---
+
 ## 🚀 Funcionalidades
 - ✅ Listagem de Pokémons com **nome, imagem e dados básicos**  
-- ✅ Exibição do **tipo** do Pokémon (fogo, água, grama etc.) com cores diferenciadas  
 - ✅ **Favoritar Pokémons** para acesso rápido  
 - ✅ **Persistência dos dados** via `localStorage` (mesmo após fechar o navegador)  
 - ✅ Interface responsiva e amigável baseada em protótipo de alta fidelidade  
