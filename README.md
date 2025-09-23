@@ -30,20 +30,21 @@ O projeto utiliza um **objeto central** para armazenar informações do usuário
     "id": "user001",
     "nome": "Visitante",
     "configuracoes": {
-      "tema": "claro",
+      "tema": "escuro",
       "idioma": "pt-BR"
     },
-    "favoritos": [25, 1]
+    "favoritos": []
   },
+
   "pokemons": [
     {
-      "id": 25,
-      "nome": "Pikachu",
-      "tipos": ["elétrico"],
-      "altura": 0.4,
-      "peso": 6.0,
-      "descricao": "Quando vários Pikachu se reúnem, sua eletricidade pode causar tempestades.",
-      "evolucoes": [{ "id": 26, "nome": "Raichu" }]
+      "id": 1,
+      "nome": "Bulbasaur",
+      "tipos": ["grama", "veneno"],
+      "altura": 0.7,
+      "peso": 6.9,
+      "descricao": "Uma estranha semente foi plantada em suas costas no nascimento.",
+      "evolucoes": [{ "id": 2, "nome": "Ivysaur" }, { "id": 3, "nome": "Venusaur" }]
     }
   ]
 }
