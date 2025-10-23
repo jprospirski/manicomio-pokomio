@@ -1,31 +1,50 @@
+// seletores de elementos globais
 const pokeContainer = document.querySelector("#pokeContainer");
 const pokemonModal = document.querySelector("#pokemonModal");
 const closeModalButton = document.querySelector("#closeModal");
 const modalInfo = document.querySelector("#modalInfo");
 
+// seletores do menu de tela cheia
+const pokebolaBtn = document.getElementById('pokebolaBtn');
+const fullMenu = document.getElementById('fullMenu');
+const menuButtonsContainer = document.getElementById('menuButtonsContainer');
+
+// configurações de cores para tipos de Pokémon
 const colors = {
   psíquico: '#ff61caff',
   fogo: '#ff6363ff',
   elétrico: '#f5ff35ff',
   fantasma: '#9040b5ff',
   grama: '#51b752ff',
-}
-const mainTypes = Object.keys(colors);
+  água: '#6390f0ff',
+  normal: '#a8a878ff',
+  venenoso: '#a040a0ff',
+  voador: '#a890f0ff',
+  inseto: '#a8b820ff',
+  terra: '#e0c068ff',
+  lutador: '#c03028ff',
+  pedra: '#b8a038ff',
+  gelo: '#98d8d8ff',
+  dragão: '#7038f8ff',
+  aço: '#b8b8d0ff',
+  noturno: '#705848ff',
+  fada: '#ee99acff',
+};
+const mainTypes = Object.keys(colors); // pega os nomes dos tipos de cores
 
-// Variável para armazenar todos os pokémons carregados
-let allPokemons = [];
+let allPokemons = []; // armazena todos os pokémons carregados
 
+// carrega os cards dos pokémons
 const loadPokemonCards = async () => {
   try {
-    const resposta = await fetch('pokemons.json'); 
+    const resposta = await fetch('pokemons.json'); // busca o arquivo JSON
     if (!resposta.ok) {
       throw new Error(`Erro ao carregar pokemons.json: ${resposta.statusText}`);
     }
-    allPokemons = await resposta.json(); // Armazena os pokemons
-    
-    // 2. Para cada pokemon encontrado no JSON, chama a função createPkCard
+    allPokemons = await resposta.json(); // converte a resposta para JSON
+
     for (const pokemon of allPokemons) {
-      createPkCard(pokemon);
+      createPkCard(pokemon); // cria um card para cada pokémon
     }
   } catch (error) {
     console.error("Não foi possível carregar os pokémons:", error);
@@ -33,24 +52,20 @@ const loadPokemonCards = async () => {
   }
 }
 
+// cria um card individual de pokémon
 const createPkCard = (poke) => {
   const card = document.createElement('div');
   card.classList.add("pokemon");
-  card.dataset.pokemonId = poke.id; // Adiciona um dataset para identificar o Pokémon
+  card.dataset.pokemonId = poke.id; // armazena o ID do pokémon no card
 
   const name = poke.nome;
   const id = poke.id;
-  
-  // Converte o ID "063" para o número 63 (necessário para a URL da imagem)
-  const numericId = parseInt(id, 10); 
-  
-  const pokeTypes = poke.estilo.split('/'); 
+  const numericId = parseInt(id, 10);
+  const pokeTypes = poke.estilo.split('/');
 
-
-  // Lógica de cor (depende do seu objeto 'colors')
-  const type = mainTypes.find(type => pokeTypes.indexOf(type) > -1);
-  const color = colors[type];
-  card.style.backgroundColor = color; 
+  const type = mainTypes.find(typeKey => pokeTypes.some(pokeType => pokeType === typeKey)); // encontra o tipo principal do pokémon
+  const color = colors[type] || '#ccc'; // define a cor do card com base no tipo
+  card.style.backgroundColor = color;
 
   const pokemonInnerHTML = `
     <div class="img-container">
@@ -62,24 +77,23 @@ const createPkCard = (poke) => {
       <small class="type">Tipo: <span>${pokeTypes.join(' / ')}</span></small>
     </div>
   `;
-  
-  card.innerHTML = pokemonInnerHTML;
-  pokeContainer.appendChild(card);
 
-  // Adiciona o event listener para abrir o modal
-  card.addEventListener('click', () => showPokemonModal(poke));
+  card.innerHTML = pokemonInnerHTML; // insere o HTML do pokémon no card
+  pokeContainer.appendChild(card); // adiciona o card ao container
+  card.addEventListener('click', () => showPokemonModal(poke)); // abre o modal ao clicar no card
 }
 
+// mostra o modal de detalhes do pokémon
 const showPokemonModal = (pokemon) => {
   const numericId = parseInt(pokemon.id, 10);
   const pokeTypes = pokemon.estilo.split('/');
-  const type = mainTypes.find(type => pokeTypes.some(t => t === type)); // Encontra o tipo principal para a cor
-  const color = colors[type] || '#ccc'; // Cor padrão se não encontrar
+  const type = mainTypes.find(typeKey => pokeTypes.some(t => t === typeKey));
+  const color = colors[type] || '#ccc';
 
-  const evolutionImages = pokemon.evolucoes.map(evoId => {
+  const evolutionImages = pokemon.evolucoes.map(evoId => { // mapeia as evoluções para imagens
     const evoNumericId = parseInt(evoId, 10);
     return `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evoNumericId}.png" alt="Evolution ${evoId}" class="evolution-img">`;
-  }).join(' <span class="evolution-arrow">></span> ');
+  }).join(' <span class="evolution-arrow">></span> '); // adiciona uma seta entre as imagens de evolução
 
   modalInfo.innerHTML = `
     <div class="modal-header">
@@ -110,20 +124,58 @@ const showPokemonModal = (pokemon) => {
       </div>
     </div>
   `;
-  pokemonModal.classList.remove('hidden');
+  pokemonModal.classList.remove('hidden'); // exibe o modal
 }
 
-// Event listener para fechar o modal
+// fecha o modal de pokémon ao clicar no botão
 closeModalButton.addEventListener('click', () => {
   pokemonModal.classList.add('hidden');
 });
 
-// Fecha o modal se clicar fora dele
+// fecha o modal de pokémon ao clicar fora dele
 window.addEventListener('click', (event) => {
   if (event.target === pokemonModal) {
     pokemonModal.classList.add('hidden');
   }
 });
 
-// Inicia a aplicação chamando a função principal
+
+// gerencia a lógica do menu lateral
+if (pokebolaBtn && fullMenu && menuButtonsContainer) {
+
+  // abre ou fecha o menu ao clicar na pokebola
+  pokebolaBtn.addEventListener('click', (event) => {
+    event.stopPropagation(); // impede o fechamento imediato do menu
+    fullMenu.classList.toggle('hidden'); // alterna a visibilidade do menu
+  });
+
+  // fecha o menu ao clicar em um dos botões
+  menuButtonsContainer.addEventListener('click', (event) => {
+    if (event.target.classList.contains('menu-button')) {
+      fullMenu.classList.add('hidden');
+      
+      const filterType = event.target.innerText;
+      console.log(`Botão clicado: ${filterType}`);
+      // filterPokemons(filterType); // função de filtro deve ser adicionada aqui
+    }
+  });
+
+  // fecha o menu ao clicar em qualquer lugar fora dele, exceto no botão da pokebola
+  window.addEventListener('click', (event) => {
+    if (!fullMenu.classList.contains('hidden') && 
+        !fullMenu.contains(event.target) && 
+        event.target !== pokebolaBtn) {
+      fullMenu.classList.add('hidden');
+    }
+  });
+
+  // fecha o menu com a tecla ESC
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !fullMenu.classList.contains('hidden')) {
+      fullMenu.classList.add('hidden');
+    }
+  });
+}
+
+// inicia o carregamento dos cards de pokémon
 loadPokemonCards();

@@ -6,10 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
   <title>Pokecômio</title>
-  <link rel="shortcut icon" href="uteis/pokebola.png" type="image/x-icon">
+  <link rel="shortcut icon" href="uteis/pokebola.png" type="image/x-icon" />
+  <link rel="shortcut icon" href="assets/pokebola.png" type="image/x-icon">
+</head>
 
 <body>
-  <h1 class="pokomio">POKOMIO</h1>
+  <div class="header-container"> 
+    <img src="assets/pokebola.png" alt="Pokebola" class="header-icon pokebola-icon" id="pokebolaBtn" /> 
+    <h1 class="pokomio">POKOMIO</h1>
+    <img src="assets/lupa.png" alt="Lupa" class="header-icon lupa-icon" /> 
+  </div>
+
   <div class="pokeContainer" id="pokeContainer">
     <div id="pokemonModal" class="modal hidden">
       <div class="modal-content">
@@ -19,7 +26,24 @@
     </div>
   </div>
 
-    <script src="script.js"></script>
+  
+  <div id="fullMenu" class="fullscreen-menu hidden">
+    <div class="menu-content"> 
+      <img src="assets/pokebola.png" alt="Menu" class="menu-icon" />
+      <p class="menu-title">menu</p>
+
+      <div class="menu-buttons" id="menuButtonsContainer">
+        <button class="menu-button">Todos</button>
+        <button class="menu-button">Favoritos</button>
+        <button class="menu-button">Gerações</button>
+        <button class="menu-button">Elementos</button>
+        <button class="menu-button">Formas</button>
+        <button class="menu-button">Filtros refinados</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 
 </html>
