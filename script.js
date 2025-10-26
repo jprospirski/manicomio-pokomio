@@ -1,15 +1,18 @@
-// seletores de elementos globais
+// --- SELETORES GLOBAIS ---
 const pokeContainer = document.querySelector("#pokeContainer");
 const pokemonModal = document.querySelector("#pokemonModal");
 const closeModalButton = document.querySelector("#closeModal");
 const modalInfo = document.querySelector("#modalInfo");
-
-// seletores do menu de tela cheia
 const pokebolaBtn = document.getElementById('pokebolaBtn');
 const fullMenu = document.getElementById('fullMenu');
 const menuButtonsContainer = document.getElementById('menuButtonsContainer');
+const lupaBtn = document.querySelector('.lupa-icon');
+const searchBarContainer = document.getElementById('searchBarContainer');
+const searchInput = document.getElementById('pokemonSearchInput');
+const headerContainer = document.querySelector('.header-container');
+const scrollToTopBtn = document.getElementById('scrollToTopBtn');
 
-// configurações de cores para tipos de Pokémon
+// --- CONSTANTES DE CORES E TIPOS ---
 const colors = {
   psíquico: '#ff61caff',
   fogo: '#ff6363ff',
@@ -30,84 +33,228 @@ const colors = {
   noturno: '#705848ff',
   fada: '#ee99acff',
 };
-const mainTypes = Object.keys(colors); // pega os nomes dos tipos de cores
+const mainTypes = Object.keys(colors);
 
-let allPokemons = []; // armazena todos os pokémons carregados
+// --- CONSTANTES DE IMAGEM ---
+const STAR_FILLED_IMG = 'assets/star-filled.png';
+const STAR_EMPTY_IMG = 'assets/star-empty.png';
+const ALT_FAVORITO = 'Favorito';
+const ALT_NAO_FAVORITO = 'Não Favorito';
 
-// Carrega favoritos do localStorage
+// --- ESTADO DA APLICAÇÃO ---
+let allPokemons = [];
 let favoritePokemons = JSON.parse(localStorage.getItem('favoritePokemons')) || [];
+let activeFilter = { value: "Todos", type: null };
+let activeSort = "id_asc";
 
-// Salva favoritos no localStorage
+// --- Listas de Menu ---
+let allGenerations = [];
+let allElements = [];
+const mainMenuItems = ["Todos", "Favoritos", "Gerações", "Elementos", "Ordenar por...", "Estágio Evolutivo", "Resetar Filtros"];
+const stageMenuItems = ["Estágio Inicial", "Estágio Intermediário", "Estágio Final", "Estágio Único"];
+const sortMenuItems = {
+  "ID (Padrão)": "id_asc",
+  "Nome (A-Z)": "name_asc",
+  "Nome (Z-A)": "name_desc",
+  "Altura (Maior)": "height_desc",
+  "Altura (Menor)": "height_asc",
+  "Peso (Mais Pesado)": "weight_desc",
+  "Peso (Mais Leve)": "weight_asc"
+};
+
+// --- Listener para o botão "Voltar ao Topo" ---
+scrollToTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// --- Listener de scroll para mostrar/esconder o botão "Voltar ao Topo" ---
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) { // Mostra o botão após rolar 300px
+    scrollToTopBtn.classList.remove('hidden');
+  } else {
+    scrollToTopBtn.classList.add('hidden');
+  }
+});
+
+// --- FUNÇÕES DE FAVORITOS (Helpers) ---
 const saveFavorites = () => {
   localStorage.setItem('favoritePokemons', JSON.stringify(favoritePokemons));
 };
 
-// Verifica se um Pokémon é favorito
 const isFavorite = (pokemonId) => {
   return favoritePokemons.includes(pokemonId);
 };
 
-// Adiciona/remove Pokémon dos favoritos
+// --- FUNÇÃO DE TOGGLE (Otimizada) ---
 const toggleFavorite = (pokemonId, event) => {
-  event.stopPropagation(); // <--- CRUCIAL: Impede que o clique na estrela se propague para o card ou modal
-  if (isFavorite(pokemonId)) {
+  event.stopPropagation();
+  const pokemonEstaFavorito = isFavorite(pokemonId);
+  if (pokemonEstaFavorito) {
     favoritePokemons = favoritePokemons.filter(id => id !== pokemonId);
   } else {
     favoritePokemons.push(pokemonId);
   }
   saveFavorites();
-  // Atualiza o card e o modal (se estiver aberto)
-  updatePokemonCards(); // Recria todos os cards para atualizar as estrelas
-  if (!pokemonModal.classList.contains('hidden') && modalInfo.dataset.pokemonId === pokemonId) {
-    showPokemonModal(allPokemons.find(p => p.id === pokemonId)); // Recarrega o modal para atualizar a estrela
+
+  const novoEstadoFavorito = !pokemonEstaFavorito;
+  const novaImgSrc = novoEstadoFavorito ? STAR_FILLED_IMG : STAR_EMPTY_IMG;
+  const novoAltText = novoEstadoFavorito ? ALT_FAVORITO : ALT_NAO_FAVORITO;
+
+  const cardNoGrid = pokeContainer.querySelector(`.pokemon[data-pokemon-id="${pokemonId}"]`);
+
+  if (activeFilter.value === "Favoritos" && !novoEstadoFavorito) {
+    if (cardNoGrid) {
+      cardNoGrid.remove();
+    }
+    if (pokeContainer.children.length === 0) {
+      pokeContainer.innerHTML = `<p style="color:white; font-size: 1.2rem; text-align: center;">Nenhum Pokémon favorito encontrado.</p>`;
+    }
+  } else {
+    if (cardNoGrid) {
+      const starIcon = cardNoGrid.querySelector('.favorite-star-icon');
+      if (starIcon) {
+        starIcon.src = novaImgSrc;
+        starIcon.alt = novoAltText;
+      }
+    }
+  }
+
+  if (!pokemonModal.classList.contains('hidden') && modalInfo.dataset.pokemonId == pokemonId) {
+    const modalStarIcon = modalInfo.querySelector('.modal-favorite-icon');
+    if (modalStarIcon) {
+      modalStarIcon.src = novaImgSrc;
+      modalStarIcon.alt = novoAltText;
+    }
   }
 };
 
-// Atualiza todos os cards após uma mudança nos favoritos
-const updatePokemonCards = () => {
-  pokeContainer.innerHTML = ''; // Limpa o container
-  allPokemons.forEach(pokemon => createPkCard(pokemon)); // Recria todos os cards
+// --- FUNÇÕES DE LÓGICA DE DADOS ---
+const parseStat = (statString) => {
+  return parseFloat(statString.replace(/m|kg/g, ''));
+}
+
+const getFilteredPokemons = () => {
+  const { value, type } = activeFilter;
+
+  if (value === "Todos") {
+    return allPokemons;
+  }
+  if (value === "Favoritos") {
+    return allPokemons.filter(poke => isFavorite(poke.id));
+  }
+  if (type === "gen") {
+    const genNumber = parseInt(value.split(' ')[1]);
+    return allPokemons.filter(poke => poke.infos.geracao === genNumber);
+  }
+  if (type === "element") {
+    const elementType = value.toLowerCase();
+    return allPokemons.filter(poke => poke.estilo.split('/').includes(elementType));
+  }
+  if (type === "stage") {
+    if (value === "Estágio Inicial") {
+      return allPokemons.filter(p => p.id === p.evolucoes[0] && p.evolucoes.length > 1);
+    }
+    if (value === "Estágio Intermediário") {
+      return allPokemons.filter(p => p.evolucoes.length > 1 && p.id !== p.evolucoes[0] && p.id !== p.evolucoes[p.evolucoes.length - 1]);
+    }
+    if (value === "Estágio Final") {
+      return allPokemons.filter(p => p.id === p.evolucoes[p.evolucoes.length - 1] && p.evolucoes.length > 1);
+    }
+    if (value === "Estágio Único") {
+      return allPokemons.filter(p => p.evolucoes.length === 1);
+    }
+  }
+
+  console.warn(`Filtro "${value}" não implementado ainda.`);
+  return allPokemons;
 };
 
+const applySort = (pokemonArray) => {
+  const sortedArray = [...pokemonArray];
 
-// carrega os cards dos pokémons
+  switch (activeSort) {
+    case "id_asc":
+      return sortedArray.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    case "name_asc":
+      return sortedArray.sort((a, b) => a.nome.localeCompare(b.nome));
+    case "name_desc":
+      return sortedArray.sort((a, b) => b.nome.localeCompare(a.nome));
+    case "height_desc":
+      return sortedArray.sort((a, b) => parseStat(b.infos.altura) - parseStat(a.infos.altura));
+    case "height_asc":
+      return sortedArray.sort((a, b) => parseStat(a.infos.altura) - parseStat(b.infos.altura));
+    case "weight_desc":
+      return sortedArray.sort((a, b) => parseStat(b.infos.peso) - parseStat(a.infos.peso));
+    case "weight_asc":
+      return sortedArray.sort((a, b) => parseStat(a.infos.peso) - parseStat(b.infos.peso));
+    default:
+      return sortedArray;
+  }
+};
+
+// --- FUNÇÕES DE RENDERIZAÇÃO ---
+const updateDisplay = () => {
+  const filteredList = getFilteredPokemons();
+  const sortedList = applySort(filteredList);
+  renderPokemons(sortedList);
+};
+
+const renderPokemons = (pokemonArray) => {
+  pokeContainer.innerHTML = '';
+
+  if (pokemonArray.length > 0) {
+    pokemonArray.forEach(pokemon => createPkCard(pokemon));
+  } else {
+    const message = activeFilter.value === "Favoritos" ?
+      'Nenhum Pokémon favorito encontrado.' :
+      `Nenhum Pokémon encontrado para "${activeFilter.value}".`;
+    pokeContainer.innerHTML = `<p style="color:white; font-size: 1.2rem; text-align: center;">${message}</p>`;
+  }
+};
+
 const loadPokemonCards = async () => {
   try {
-    const resposta = await fetch('pokemons.json'); // busca o arquivo JSON
+    const resposta = await fetch('pokemons.json');
     if (!resposta.ok) {
       throw new Error(`Erro ao carregar pokemons.json: ${resposta.statusText}`);
     }
-    allPokemons = await resposta.json(); // converte a resposta para JSON
+    allPokemons = await resposta.json();
 
-    updatePokemonCards(); // Cria e exibe todos os cards
+    const generations = new Set(allPokemons.map(p => p.infos.geracao));
+    allGenerations = [...generations].sort((a, b) => a - b);
+
+    const elements = new Set(allPokemons.flatMap(p => p.estilo.split('/')));
+    allElements = [...elements].sort((a, b) => a.localeCompare(b));
+
+    updateDisplay();
+
   } catch (error) {
     console.error("Não foi possível carregar os pokémons:", error);
     pokeContainer.innerHTML = "<p>Erro ao carregar os dados. Verifique o console.</p>";
   }
 }
 
-// cria um card individual de pokémon
 const createPkCard = (poke) => {
   const card = document.createElement('div');
   card.classList.add("pokemon");
-  card.dataset.pokemonId = poke.id; // armazena o ID do pokémon no card
+  card.dataset.pokemonId = poke.id;
 
   const name = poke.nome;
   const id = poke.id;
   const numericId = parseInt(id, 10);
   const pokeTypes = poke.estilo.split('/');
 
-  const type = mainTypes.find(typeKey => pokeTypes.some(pokeType => pokeType === typeKey)); // encontra o tipo principal do pokémon
-  const color = colors[type] || '#ccc'; // define a cor do card com base no tipo
+  const type = mainTypes.find(typeKey => pokeTypes.some(pokeType => pokeType === typeKey));
+  const color = colors[type] || '#ccc';
   card.style.backgroundColor = color;
 
   const isFav = isFavorite(poke.id);
-  const favoriteStar = isFav ? '<img src="assets/star-filled.png" alt="Favorito" class="favorite-star-icon">' : '<img src="assets/star-empty.png" alt="Não Favorito" class="favorite-star-icon">';
-
+  const favoriteStarImg = isFav ? STAR_FILLED_IMG : STAR_EMPTY_IMG;
+  const favoriteStarAlt = isFav ? ALT_FAVORITO : ALT_NAO_FAVORITO;
 
   const pokemonInnerHTML = `
     <div class="favorite-icon-wrapper" data-pokemon-id="${poke.id}">
-        ${favoriteStar}
+        <img src="${favoriteStarImg}" alt="${favoriteStarAlt}" class="favorite-star-icon">
     </div>
     <div class="img-container">
       <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${numericId}.png" alt="${name}">
@@ -119,44 +266,34 @@ const createPkCard = (poke) => {
     </div>
   `;
 
-  card.innerHTML = pokemonInnerHTML; // insere o HTML do pokémon no card
-  pokeContainer.appendChild(card); // adiciona o card ao container
-
-  // Adiciona listener para o card (abre modal)
-  card.addEventListener('click', () => showPokemonModal(poke));
-
-  // Adiciona listener para o ícone de favorito
-  const favoriteIconWrapper = card.querySelector('.favorite-icon-wrapper');
-  if (favoriteIconWrapper) {
-    favoriteIconWrapper.addEventListener('click', (event) => toggleFavorite(poke.id, event));
-  }
+  card.innerHTML = pokemonInnerHTML;
+  pokeContainer.appendChild(card);
 }
 
-// mostra o modal de detalhes do pokémon
-// substitua sua função showPokemonModal por esta
+// Mostra o modal (ATUALIZADO com evoluções clicáveis)
 const showPokemonModal = (pokemon) => {
+  const currentPokemonId = pokemon.id; // Guarda o ID atual para comparação
   const numericId = parseInt(pokemon.id, 10);
   const pokeTypes = pokemon.estilo.split('/');
   const type = mainTypes.find(t => pokeTypes.some(x => x === t));
-  const color = colors[type] || '#ccc'; // cor do card (início do gradiente)
-
-  // cor de fim do gradiente
+  const color = colors[type] || '#ccc';
   const modalBgColor = '#333';
 
-  // monta as imagens de evolução (igual ao seu código)
+  // Adiciona data-pokemon-id às imagens de evolução
   const evolutionImages = pokemon.evolucoes.map(evoId => {
     const evoNumericId = parseInt(evoId, 10);
-    return `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evoNumericId}.png" alt="Evolution ${evoId}" class="evolution-img">`;
+    return `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evoNumericId}.png" alt="Evolution ${evoId}" class="evolution-img" data-pokemon-id="${evoId}">`;
   }).join(' <span class="evolution-arrow">></span> ');
 
   const isFav = isFavorite(pokemon.id);
-  const modalFavoriteStar = isFav ? '<img src="assets/star-filled.png" alt="Favorito" class="modal-favorite-icon">' : '<img src="assets/star-empty.png" alt="Não Favorito" class="modal-favorite-icon">';
+  const modalFavoriteStarImg = isFav ? STAR_FILLED_IMG : STAR_EMPTY_IMG;
+  const modalFavoriteStarAlt = isFav ? ALT_FAVORITO : ALT_NAO_FAVORITO;
 
-  modalInfo.dataset.pokemonId = pokemon.id;
+  modalInfo.dataset.pokemonId = pokemon.id; // Guarda o ID atual no modal
 
   modalInfo.innerHTML = `
     <div class="modal-favorite-wrapper" data-pokemon-id="${pokemon.id}">
-        ${modalFavoriteStar}
+        <img src="${modalFavoriteStarImg}" alt="${modalFavoriteStarAlt}" class="modal-favorite-icon">
     </div>
     <div class="modal-header">
       <div class="modal-img-container">
@@ -187,13 +324,11 @@ const showPokemonModal = (pokemon) => {
     </div>
   `;
 
-  // agora aplicamos o gradiente dinamicamente ao container da imagem
+  // Aplica gradiente dinâmico
   const modalImgContainer = modalInfo.querySelector('.modal-img-container');
   if (modalImgContainer) {
     modalImgContainer.style.background = `linear-gradient(0deg, ${color} -100%, ${modalBgColor} 100%)`;
   }
-
-  //adiciona background as evoluções
   const evolutionImgs = modalInfo.querySelectorAll('.evolution-img');
   if (evolutionImgs.length > 0) {
     evolutionImgs.forEach(img => {
@@ -201,91 +336,241 @@ const showPokemonModal = (pokemon) => {
     });
   }
 
-  // finalmente mostra o modal
-  pokemonModal.classList.remove('hidden');
+  pokemonModal.classList.remove('hidden'); // Mostra o modal
 
-  // mantém funcionalidade da estrela no modal
+  // Adiciona listener para a estrela DO MODAL (com replace para evitar duplicidade)
   const modalFavoriteWrapper = modalInfo.querySelector('.modal-favorite-wrapper');
   if (modalFavoriteWrapper) {
-    modalFavoriteWrapper.addEventListener('click', (event) => toggleFavorite(pokemon.id, event));
+    const newFavWrapper = modalFavoriteWrapper.cloneNode(true);
+    modalFavoriteWrapper.replaceWith(newFavWrapper);
+    newFavWrapper.addEventListener('click', (event) => toggleFavorite(pokemon.id, event));
+  }
+  
+  // Adiciona listener para EVOLUÇÕES (com replace para evitar duplicidade)
+  const evolutionChainContainer = modalInfo.querySelector('.evolution-chain');
+  if (evolutionChainContainer) {
+     const newEvoChain = evolutionChainContainer.cloneNode(true);
+     evolutionChainContainer.replaceWith(newEvoChain);
+     newEvoChain.addEventListener('click', (event) => {
+      const clickedImage = event.target.closest('.evolution-img');
+      if (clickedImage) {
+        const clickedPokemonId = clickedImage.dataset.pokemonId;
+        
+        if (clickedPokemonId && clickedPokemonId !== currentPokemonId) { 
+          const nextPokemon = allPokemons.find(p => p.id === clickedPokemonId);
+          if (nextPokemon) {
+            showPokemonModal(nextPokemon); 
+          } else {
+            console.error(`Pokémon com ID ${clickedPokemonId} não encontrado.`);
+          }
+        }
+      }
+    });
   }
 };
 
+// --- FUNÇÕES DE MENU ---
+const renderMenuButtons = (items, type) => {
+  menuButtonsContainer.innerHTML = '';
 
-// fecha o modal de pokémon ao clicar no botão
+  if (type !== 'main') {
+    menuButtonsContainer.innerHTML = '<button class="menu-button" data-type="back">Voltar</button>';
+  }
+
+  items.forEach(item => {
+    const button = document.createElement('button');
+    button.classList.add('menu-button');
+    button.dataset.type = type;
+
+    if (type === 'gen') {
+      button.innerText = `Geração ${item}`;
+      button.dataset.value = `Geração ${item}`;
+    } else {
+      button.innerText = item;
+      button.dataset.value = item;
+    }
+    menuButtonsContainer.appendChild(button);
+  });
+};
+
+const showMainMenu = () => {
+  renderMenuButtons(mainMenuItems, 'main');
+};
+const showGenerationFilters = () => {
+  renderMenuButtons(allGenerations, 'gen');
+};
+const showElementFilters = () => {
+  renderMenuButtons(allElements, 'element');
+};
+const showStageFilters = () => {
+  renderMenuButtons(stageMenuItems, 'stage');
+};
+const showSortFilters = () => {
+  renderMenuButtons(Object.keys(sortMenuItems), 'sort');
+};
+
+// --- EVENT LISTENERS GLOBAIS ---
+pokeContainer.addEventListener('click', (event) => {
+  const favoriteWrapper = event.target.closest('.favorite-icon-wrapper');
+  if (favoriteWrapper) {
+    const pokemonId = favoriteWrapper.dataset.pokemonId;
+    if (pokemonId) {
+      toggleFavorite(pokemonId, event);
+    }
+    return;
+  }
+  const pokemonCard = event.target.closest('.pokemon');
+  if (pokemonCard) {
+    const pokemonId = pokemonCard.dataset.pokemonId;
+    const pokemon = allPokemons.find(p => p.id == pokemonId);
+    if (pokemon) {
+      showPokemonModal(pokemon);
+    }
+  }
+});
+
+lupaBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  searchBarContainer.classList.toggle('hidden');
+  headerContainer.classList.toggle('search-active');
+
+  if (!searchBarContainer.classList.contains('hidden')) {
+    searchInput.focus();
+  } else {
+    searchInput.value = '';
+    updateDisplay();
+  }
+});
+
+searchInput.addEventListener('input', (event) => {
+  const searchTerm = event.target.value.toLowerCase().trim();
+
+  if (searchTerm === '') {
+    updateDisplay();
+    return;
+  }
+
+  const filtered = allPokemons.filter(pokemon => {
+    const nomeMatch = pokemon.nome.toLowerCase().includes(searchTerm);
+    const idMatch = pokemon.id.includes(searchTerm);
+    return nomeMatch || idMatch;
+  });
+
+  const sorted = applySort(filtered);
+
+  pokeContainer.innerHTML = '';
+  if (sorted.length > 0) {
+    sorted.forEach(pokemon => createPkCard(pokemon));
+  } else {
+    pokeContainer.innerHTML = `<p style="color:white; font-size: 1.2rem; text-align: center;">Pokémon não encontrado.</p>`;
+  }
+});
+
 closeModalButton.addEventListener('click', () => {
   pokemonModal.classList.add('hidden');
 });
 
-// fecha o modal de pokémon ao clicar fora dele
 window.addEventListener('click', (event) => {
+  if (!fullMenu.classList.contains('hidden') &&
+    !fullMenu.contains(event.target) &&
+    event.target !== pokebolaBtn) {
+    fullMenu.classList.add('hidden');
+  }
+
+  if (!searchBarContainer.classList.contains('hidden') &&
+    !searchBarContainer.contains(event.target) &&
+    event.target !== lupaBtn) {
+
+    searchBarContainer.classList.add('hidden');
+    headerContainer.classList.remove('search-active');
+    searchInput.value = '';
+    updateDisplay();
+  }
+
   if (event.target === pokemonModal) {
     pokemonModal.classList.add('hidden');
   }
 });
 
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    if (!fullMenu.classList.contains('hidden')) {
+      fullMenu.classList.add('hidden');
+    }
+    if (!searchBarContainer.classList.contains('hidden')) {
+      searchBarContainer.classList.add('hidden');
+      headerContainer.classList.remove('search-active');
+      searchInput.value = '';
+      updateDisplay();
+    }
+    if (!pokemonModal.classList.contains('hidden')) {
+      pokemonModal.classList.add('hidden');
+    }
+  }
+});
 
-// gerencia a lógica do menu lateral
 if (pokebolaBtn && fullMenu && menuButtonsContainer) {
 
-  // abre ou fecha o menu ao clicar na pokebola
   pokebolaBtn.addEventListener('click', (event) => {
-    event.stopPropagation(); // impede o fechamento imediato do menu
-    fullMenu.classList.toggle('hidden'); // alterna a visibilidade do menu
+    event.stopPropagation();
+    fullMenu.classList.toggle('hidden');
+    // Garante que o menu principal seja exibido ao abrir
+    showMainMenu();
   });
 
-  // fecha o menu ao clicar em um dos botões
   menuButtonsContainer.addEventListener('click', (event) => {
-    if (event.target.classList.contains('menu-button')) {
-      fullMenu.classList.add('hidden');
+    event.stopPropagation();
 
-      const filterType = event.target.innerText;
-      console.log(`Botão clicado: ${filterType}`);
-      filterPokemons(filterType); // Chamada para a nova função de filtro
+    const targetButton = event.target;
+    if (!targetButton.classList.contains('menu-button')) return;
+
+    const buttonText = targetButton.innerText;
+    const filterType = targetButton.dataset.type;
+
+    // --- LÓGICA DE NAVEGAÇÃO DO MENU ---
+    if (buttonText === "Gerações") {
+      showGenerationFilters();
+      return;
     }
-  });
+    if (buttonText === "Elementos") {
+      showElementFilters();
+      return;
+    }
+    if (buttonText === "Estágio Evolutivo") {
+      showStageFilters();
+      return;
+    }
+    if (buttonText === "Ordenar por...") {
+      showSortFilters();
+      return;
+    }
+    if (filterType === "back" || buttonText === "Voltar") {
+      showMainMenu();
+      return;
+    }
 
-  // Função para filtrar Pokémon
-  const filterPokemons = (filterType) => {
-    pokeContainer.innerHTML = ''; // Limpa os Pokémon existentes
-    let filtered = [];
+    // --- LÓGICA DE AÇÃO (Filtro, Sort ou Reset) ---
+    fullMenu.classList.add('hidden'); // Fecha o menu
 
-    if (filterType === "Todos") {
-      filtered = allPokemons;
-    } else if (filterType === "Favoritos") {
-      filtered = allPokemons.filter(poke => isFavorite(poke.id));
+    if (buttonText === "Resetar Filtros") {
+      activeFilter = { value: "Todos", type: null };
+      activeSort = "id_asc";
+    }
+    else if (filterType === 'sort') {
+      activeSort = sortMenuItems[buttonText];
     } else {
-      // Implemente a lógica para outros filtros (Gerações, Elementos, Formas, etc.)
-      // Por enquanto, apenas um placeholder:
-      // filtered = allPokemons.filter(poke => poke.estilo.includes(filterType.toLowerCase()));
-      console.warn(`Filtro "${filterType}" não implementado ainda.`);
-      filtered = allPokemons; // Mostra todos se o filtro não for reconhecido
+      activeFilter = { value: buttonText, type: filterType === 'main' ? null : filterType };
     }
 
-    if (filtered.length > 0) {
-      filtered.forEach(pokemon => createPkCard(pokemon));
-    } else {
-      pokeContainer.innerHTML = `<p style="color:white; font-size: 1.2rem; text-align: center;">Nenhum Pokémon encontrado para "${filterType}".</p>`;
+    searchInput.value = '';
+    if (headerContainer.classList.contains('search-active')) {
+        searchBarContainer.classList.add('hidden');
+        headerContainer.classList.remove('search-active');
     }
-  };
 
-
-  // fecha o menu ao clicar em qualquer lugar fora dele, exceto no botão da pokebola
-  window.addEventListener('click', (event) => {
-    if (!fullMenu.classList.contains('hidden') &&
-      !fullMenu.contains(event.target) &&
-      event.target !== pokebolaBtn) {
-      fullMenu.classList.add('hidden');
-    }
-  });
-
-  // fecha o menu com a tecla ESC
-  window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !fullMenu.classList.contains('hidden')) {
-      fullMenu.classList.add('hidden');
-    }
+    updateDisplay();
   });
 }
 
-// inicia o carregamento dos cards de pokémon
+// --- INICIALIZAÇÃO ---
 loadPokemonCards();

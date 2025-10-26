@@ -13,7 +13,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
 }
 
@@ -21,10 +20,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-block: 100px;
   width: 100%;
-  position: relative;
-  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 80px;
+  padding-bottom: 30px;
+  background-color: #212121;
+  z-index: 901;
+  padding-inline: 5%;
+  box-sizing: border-box;
+}
+
+.header-container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(to bottom, #212121 0%, transparent 100%);
+  transform: translateY(100%);
+  pointer-events: none;
 }
 
 .pokomio {
@@ -33,36 +50,89 @@ body {
   color: aliceblue;
   text-align: center;
   margin: 0;
+  flex-shrink: 0;
+  transition: margin-right 0.3s ease-in-out;
 }
 
 .header-icon {
   width: 60px;
   height: 60px;
   object-fit: contain;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .pokebola-icon {
+  position: absolute;
   left: 5%;
-  cursor: pointer;
 }
 
 .lupa-icon {
+  position: absolute;
   right: 5%;
-  cursor: pointer;
+  z-index: 902;
 }
+
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  margin: 0 20px;
+}
+
+.search-bar-container:not(.hidden) {
+  max-width: 600px;
+  opacity: 1;
+}
+
+#pokemonSearchInput {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  width: 100%;
+  padding: 15px 20px;
+  background-color: #333;
+  border: 2px solid #555;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  outline: none;
+  text-align: center;
+}
+
+#pokemonSearchInput::placeholder {
+  color: #888;
+  opacity: 0.8;
+}
+
+.header-container:not(.search-active) .pokomio {
+  margin-right: 0;
+}
+
+.header-container.search-active .pokomio {
+  margin-right: 20px;
+}
+
 
 .pokeContainer {
   display: grid;
   justify-content: center;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+  /* --- MUDANÇA AQUI (Desktop) --- */
+  /* Reduzimos para 280px para garantir a folga necessária */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 275px));
+  /* --- FIM DA MUDANÇA --- */
+
   gap: 1%;
   width: 100%;
   max-width: 1200px;
   padding: 0 1% 10%;
   margin: 0 auto;
+  margin-top: 310px;
 }
 
 .pokemon {
@@ -75,18 +145,17 @@ body {
   position: relative;
 }
 
+/* ... (O restante do CSS é IDÊNTICO) ... */
 .pokemon:hover {
   transform: translateY(-5px);
 }
 
-/* Estrela de favorito no card */
 .favorite-icon-wrapper {
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 5;
   cursor: pointer;
-  /* background-color: rgba(255, 255, 255, 0.7); */
   border-radius: 50%;
   padding: 5px;
   display: flex;
@@ -94,7 +163,6 @@ body {
   justify-content: center;
   width: 40px;
   height: 40px;
-  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); */
 }
 
 .favorite-star-icon {
@@ -102,7 +170,6 @@ body {
   height: 30px;
   object-fit: contain;
 }
-
 
 .img-container {
   background-color: rgba(255, 255, 255, 0.5);
@@ -366,7 +433,6 @@ body {
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
   border-radius: 20px;
-
 }
 
 .fullscreen-menu:not(.hidden) {
@@ -389,7 +455,7 @@ body {
   width: 80px;
   height: 80px;
   object-fit: contain;
-  margin-bottom: 10%  ;
+  margin-bottom: 10%;
 }
 
 .menu-title {
@@ -433,11 +499,65 @@ body {
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.6);
 }
 
+/* Scroll to Top Button */
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ffffff;
+  /* Cor amarela do tipo Terra */
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  /* Tamanho do botão */
+  height: 60px;
+  /* Tamanho do botão */
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  opacity: 0;
+  transform: translateY(100px);
+  /* Esconde inicialmente */
+  padding: 10px;
+  /* Espaçamento interno para a imagem */
+}
+
+.scroll-to-top-btn.hidden {
+  opacity: 0;
+  transform: translateY(100px);
+  pointer-events: none;
+  /* Impede cliques quando invisível */
+}
+
+.scroll-to-top-btn:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-to-top-btn:hover {
+  background-color: #f0d078;
+}
+
+.scroll-to-top-btn img {
+  width: 100%;
+  /* A imagem preenche o botão */
+  height: 100%;
+  object-fit: contain;
+  /* Garante que a imagem se ajuste sem cortar */
+}
+
 @media (max-width: 768px) {
   .header-container {
-    margin-block: 50px;
+    padding-top: 80px;
+    padding-bottom: 20px;
+    padding-inline: 5px;
   }
 
+  /* ... (restante do responsivo 768px) ... */
   .pokomio {
     font-size: 40px;
   }
@@ -448,16 +568,34 @@ body {
   }
 
   .pokebola-icon {
-    left: 100px;
+    left: 10px;
   }
 
   .lupa-icon {
-    right: 100px;
+    right: 10px;
+  }
+
+  .search-bar-container {
+    margin: 0 10px;
+  }
+
+  .search-bar-container:not(.hidden) {
+    max-width: calc(100% - 150px);
+  }
+
+  #pokemonSearchInput {
+    font-size: 0.8rem;
+    padding: 10px 15px;
+  }
+
+  .header-container.search-active .pokomio {
+    margin-right: 10px;
   }
 
   .pokeContainer {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 250px));
     padding: 0 10px 30px;
+    margin-top: 190px;
   }
 
   .pokemon .img-container {
@@ -469,6 +607,7 @@ body {
     font-size: 0.9rem;
   }
 
+  /* ... (restante do responsivo 768px idêntico) ... */
   .modal-content {
     width: 95%;
     padding: 15px;
@@ -499,7 +638,6 @@ body {
     font-size: 1.5rem;
   }
 
-  /* Ajustes responsivos para as estrelas */
   .favorite-icon-wrapper {
     width: 30px;
     height: 30px;
@@ -518,7 +656,6 @@ body {
     height: 30px;
     top: 10px;
     right: 55px;
-    /* Ajuste para responsividade */
     padding: 3px;
   }
 
@@ -526,13 +663,23 @@ body {
     width: 20px;
     height: 20px;
   }
+
+  .scroll-to-top-btn {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+    padding: 8px;
+  }
 }
 
 @media (max-width: 480px) {
   .header-container {
-    margin-block: 30px;
+    padding-top: 80px;
+    padding-bottom: 15px;
   }
 
+  /* ... (restante do responsivo 480px) ... */
   .pokomio {
     font-size: 30px;
   }
@@ -543,16 +690,25 @@ body {
   }
 
   .pokebola-icon {
-    left: 50px;
+    left: 5px;
   }
 
   .lupa-icon {
-    right: 50px;
+    right: 5px;
+  }
+
+  .search-bar-container:not(.hidden) {
+    max-width: calc(100% - 100px);
+  }
+
+  #pokemonSearchInput {
+    padding: 8px 10px;
   }
 
   .pokeContainer {
     grid-template-columns: 1fr;
     padding: 0 5px 20px;
+    margin-top: 165px;
   }
 
   .pokemon {
@@ -573,3 +729,12 @@ body {
   .modal-description p {
     font-size: 0.8rem;
   }
+
+  .scroll-to-top-btn {
+    width: 45px;
+    height: 45px;
+    bottom: 10px;
+    right: 10px;
+    padding: 6px;
+  }
+}
