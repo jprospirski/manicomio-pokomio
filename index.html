@@ -1,47 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Pokecômio</title>
+    <link rel="shortcut icon" href="assets/pokebola.png" type="image/x-icon" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Pokecômio</title>
-  <link rel="shortcut icon" href="uteis/pokebola.png" type="image/x-icon" />
-  <link rel="shortcut icon" href="assets/pokebola.png" type="image/x-icon">
-</head>
+  <body>
+    <div class="header-container">
+      <img
+        src="assets/pokebola.png"
+        alt="Pokebola"
+        class="header-icon pokebola-icon"
+        id="pokebolaBtn"
+      />
+      <h1 class="pokomio">POKOMIO</h1>
 
-<body>
-  <div class="header-container">
-    <img src="assets/pokebola.png" alt="Pokebola" class="header-icon pokebola-icon" id="pokebolaBtn" />
-    <h1 class="pokomio">POKOMIO</h1>
-    <img src="assets/lupa.png" alt="Lupa" class="header-icon lupa-icon" />
-  </div>
+      <div id="searchBarContainer" class="search-bar-container hidden">
+        <input
+          type="text"
+          id="pokemonSearchInput"
+          placeholder="Buscar por Nome ou ID..."
+        />
+      </div>
 
-  <div class="pokeContainer" id="pokeContainer"></div>
-  <div id="pokemonModal" class="modal hidden">
-    <div class="modal-content">
-      <span id="closeModal" class="close-button">&times;</span>
-      <div id="modalInfo"></div>
+      <img src="assets/lupa.png" alt="Lupa" class="header-icon lupa-icon" />
     </div>
-  </div>
 
+    <button id="scrollToTopBtn" class="scroll-to-top-btn hidden">
+      <img src="assets/setacima.png" alt="Voltar ao Topo" />
+    </button>
 
-  <div id="fullMenu" class="fullscreen-menu hidden">
-    <div class="menu-content">
-      <img src="assets/pokebola.png" alt="Menu" class="menu-icon" />
+    <div class="pokeContainer" id="pokeContainer"></div>
 
-      <div class="menu-buttons" id="menuButtonsContainer">
-        <button class="menu-button">Todos</button>
-        <button class="menu-button">Favoritos</button>
-        <button class="menu-button">Gerações</button>
-        <button class="menu-button">Elementos</button>
-        <button class="menu-button">Formas</button>
-        <button class="menu-button">Filtros refinados</button>
+    <div id="pokemonModal" class="modal hidden">
+      <div class="modal-content">
+        <span id="closeModal" class="close-button">&times;</span>
+        <div id="modalInfo"></div>
       </div>
     </div>
-  </div>
 
-  <script src="script.js"></script>
-</body>
+    <div id="fullMenu" class="fullscreen-menu hidden">
+      <div class="menu-content">
+        <img src="assets/pokebola.png" alt="Menu" class="menu-icon" />
 
+        <div class="menu-buttons" id="menuButtonsContainer">
+          <button class="menu-button">Todos</button>
+          <button class="menu-button">Favoritos</button>
+          <button class="menu-button">Gerações</button>
+          <button class="menu-button">Elementos</button>
+          <button class="menu-button">Ordenar por...</button>
+          <button class="menu-button">Estágio Evolutivo</button>
+          <button class="menu-button">Resetar Filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
 </html>
