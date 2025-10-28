@@ -121,12 +121,7 @@ body {
 .pokeContainer {
   display: grid;
   justify-content: center;
-
-  /* --- MUDANÇA AQUI (Desktop) --- */
-  /* Reduzimos para 280px para garantir a folga necessária */
   grid-template-columns: repeat(auto-fit, minmax(250px, 275px));
-  /* --- FIM DA MUDANÇA --- */
-
   gap: 1%;
   width: 100%;
   max-width: 1200px;
@@ -145,7 +140,6 @@ body {
   position: relative;
 }
 
-/* ... (O restante do CSS é IDÊNTICO) ... */
 .pokemon:hover {
   transform: translateY(-5px);
 }
@@ -499,19 +493,16 @@ body {
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.6);
 }
 
-/* Scroll to Top Button */
+/* botão para voltar ao topo */
 .scroll-to-top-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
   background-color: #ffffff;
-  /* Cor amarela do tipo Terra */
   border: none;
   border-radius: 50%;
   width: 60px;
-  /* Tamanho do botão */
   height: 60px;
-  /* Tamanho do botão */
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   display: flex;
@@ -520,17 +511,14 @@ body {
   z-index: 1000;
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   opacity: 0;
-  transform: translateY(100px);
-  /* Esconde inicialmente */
+  transform: translateY(100px); /* esconde inicialmente */
   padding: 10px;
-  /* Espaçamento interno para a imagem */
 }
 
 .scroll-to-top-btn.hidden {
   opacity: 0;
   transform: translateY(100px);
-  pointer-events: none;
-  /* Impede cliques quando invisível */
+  pointer-events: none; /* impede os clicks quando não estiver visivel */
 }
 
 .scroll-to-top-btn:not(.hidden) {
@@ -544,12 +532,11 @@ body {
 
 .scroll-to-top-btn img {
   width: 100%;
-  /* A imagem preenche o botão */
   height: 100%;
-  object-fit: contain;
-  /* Garante que a imagem se ajuste sem cortar */
+  object-fit: contain; /* garante que a imagem se ajuste sem cortar */
 }
 
+/* responsividade */
 @media (max-width: 768px) {
   .header-container {
     padding-top: 80px;
@@ -557,7 +544,6 @@ body {
     padding-inline: 5px;
   }
 
-  /* ... (restante do responsivo 768px) ... */
   .pokomio {
     font-size: 40px;
   }
@@ -607,7 +593,6 @@ body {
     font-size: 0.9rem;
   }
 
-  /* ... (restante do responsivo 768px idêntico) ... */
   .modal-content {
     width: 95%;
     padding: 15px;
@@ -679,7 +664,6 @@ body {
     padding-bottom: 15px;
   }
 
-  /* ... (restante do responsivo 480px) ... */
   .pokomio {
     font-size: 30px;
   }

@@ -76,7 +76,7 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// --- FUNÇÕES DE FAVORITOS (Helpers) ---
+// --- FUNÇÕES DE FAVORITOS ---
 const saveFavorites = () => {
   localStorage.setItem('favoritePokemons', JSON.stringify(favoritePokemons));
 };
@@ -85,7 +85,7 @@ const isFavorite = (pokemonId) => {
   return favoritePokemons.includes(pokemonId);
 };
 
-// --- FUNÇÃO DE TOGGLE (Otimizada) ---
+// --- FUNÇÃO DE TOGGLE ---
 const toggleFavorite = (pokemonId, event) => {
   event.stopPropagation();
   const pokemonEstaFavorito = isFavorite(pokemonId);
@@ -270,16 +270,16 @@ const createPkCard = (poke) => {
   pokeContainer.appendChild(card);
 }
 
-// Mostra o modal (ATUALIZADO com evoluções clicáveis)
+// mostra o modal (ATUALIZADO com evoluções clicaveis)
 const showPokemonModal = (pokemon) => {
-  const currentPokemonId = pokemon.id; // Guarda o ID atual para comparação
+  const currentPokemonId = pokemon.id; // guarda o ID atual para comparação
   const numericId = parseInt(pokemon.id, 10);
   const pokeTypes = pokemon.estilo.split('/');
   const type = mainTypes.find(t => pokeTypes.some(x => x === t));
   const color = colors[type] || '#ccc';
   const modalBgColor = '#333';
 
-  // Adiciona data-pokemon-id às imagens de evolução
+  // adiciona data-pokemon-id as imagens de evolução
   const evolutionImages = pokemon.evolucoes.map(evoId => {
     const evoNumericId = parseInt(evoId, 10);
     return `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evoNumericId}.png" alt="Evolution ${evoId}" class="evolution-img" data-pokemon-id="${evoId}">`;
@@ -289,7 +289,7 @@ const showPokemonModal = (pokemon) => {
   const modalFavoriteStarImg = isFav ? STAR_FILLED_IMG : STAR_EMPTY_IMG;
   const modalFavoriteStarAlt = isFav ? ALT_FAVORITO : ALT_NAO_FAVORITO;
 
-  modalInfo.dataset.pokemonId = pokemon.id; // Guarda o ID atual no modal
+  modalInfo.dataset.pokemonId = pokemon.id; // guarda o ID atual no modal
 
   modalInfo.innerHTML = `
     <div class="modal-favorite-wrapper" data-pokemon-id="${pokemon.id}">
@@ -324,7 +324,7 @@ const showPokemonModal = (pokemon) => {
     </div>
   `;
 
-  // Aplica gradiente dinâmico
+  // aplica gradiente dinâmico
   const modalImgContainer = modalInfo.querySelector('.modal-img-container');
   if (modalImgContainer) {
     modalImgContainer.style.background = `linear-gradient(0deg, ${color} -100%, ${modalBgColor} 100%)`;
@@ -336,17 +336,17 @@ const showPokemonModal = (pokemon) => {
     });
   }
 
-  pokemonModal.classList.remove('hidden'); // Mostra o modal
+  pokemonModal.classList.remove('hidden'); // mostra o modal
 
-  // Adiciona listener para a estrela DO MODAL (com replace para evitar duplicidade)
+  // adiciona listener para a estrela DO MODAL
   const modalFavoriteWrapper = modalInfo.querySelector('.modal-favorite-wrapper');
   if (modalFavoriteWrapper) {
     const newFavWrapper = modalFavoriteWrapper.cloneNode(true);
     modalFavoriteWrapper.replaceWith(newFavWrapper);
     newFavWrapper.addEventListener('click', (event) => toggleFavorite(pokemon.id, event));
   }
-  
-  // Adiciona listener para EVOLUÇÕES (com replace para evitar duplicidade)
+
+  // adiciona listener para EVOLUÇÕES
   const evolutionChainContainer = modalInfo.querySelector('.evolution-chain');
   if (evolutionChainContainer) {
      const newEvoChain = evolutionChainContainer.cloneNode(true);
@@ -369,7 +369,7 @@ const showPokemonModal = (pokemon) => {
   }
 };
 
-// --- FUNÇÕES DE MENU ---
+// --- funções do menu ---
 const renderMenuButtons = (items, type) => {
   menuButtonsContainer.innerHTML = '';
 
@@ -514,7 +514,7 @@ if (pokebolaBtn && fullMenu && menuButtonsContainer) {
   pokebolaBtn.addEventListener('click', (event) => {
     event.stopPropagation();
     fullMenu.classList.toggle('hidden');
-    // Garante que o menu principal seja exibido ao abrir
+    // garante que o menu principal seja exibido ao abrir
     showMainMenu();
   });
 
@@ -527,7 +527,7 @@ if (pokebolaBtn && fullMenu && menuButtonsContainer) {
     const buttonText = targetButton.innerText;
     const filterType = targetButton.dataset.type;
 
-    // --- LÓGICA DE NAVEGAÇÃO DO MENU ---
+    // --- lógica navegação do menu ---
     if (buttonText === "Gerações") {
       showGenerationFilters();
       return;
@@ -549,8 +549,8 @@ if (pokebolaBtn && fullMenu && menuButtonsContainer) {
       return;
     }
 
-    // --- LÓGICA DE AÇÃO (Filtro, Sort ou Reset) ---
-    fullMenu.classList.add('hidden'); // Fecha o menu
+    // --- lógica de ação ---
+    fullMenu.classList.add('hidden'); // fecha o menu
 
     if (buttonText === "Resetar Filtros") {
       activeFilter = { value: "Todos", type: null };
@@ -572,5 +572,5 @@ if (pokebolaBtn && fullMenu && menuButtonsContainer) {
   });
 }
 
-// --- INICIALIZAÇÃO ---
+// --- inicialização ---
 loadPokemonCards();
