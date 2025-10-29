@@ -6,6 +6,8 @@ Cada Pokémon contém **detalhes completos, informações de geração, tipos, a
 
 O sistema oferece **busca instantânea**, **filtros avançados**, **modal de detalhes**, **favoritos persistentes** e **menu interativo com múltiplas opções** — tudo salvo localmente no navegador do usuário.
 
+### Acesse o site agora mesmo!
+https://jprospirski.github.io/manicomio-pokomio/
 ---
 
 ## 🚀 Funcionalidades Principais
@@ -106,17 +108,6 @@ pokomio/
 - João Pedro Rospirski Pegorini  
 - João Rafael Tedesqui  
 - Leonardo Barth  
-
----
-
-## 🏁 Como Executar
-
-1. Baixe ou clone o repositório:
-   ```bash
-   git clone https://github.com/seuusuario/pokomio.git
-   ```
-2. Abra o arquivo `index.html` em qualquer navegador moderno  
-3. Explore, filtre, favorite e descubra Pokémons! ⚡
 
 ---
 
