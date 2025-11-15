@@ -9,51 +9,60 @@
   </head>
 
   <body>
-    <div class="header-container">
+    <div class="container-cabecalho">
       <img
         src="assets/pokebola.png"
         alt="Pokebola"
-        class="header-icon pokebola-icon"
-        id="pokebolaBtn"
+        class="icone-cabecalho icone-pokebola"
+        id="botaoPokebola"
       />
       <h1 class="pokomio">POKOMIO</h1>
 
-      <div id="searchBarContainer" class="search-bar-container hidden">
+      <div id="containerBarraBusca" class="container-barra-busca hidden">
         <input
           type="text"
-          id="pokemonSearchInput"
+          id="inputBuscaPokemon"
           placeholder="Buscar por Nome ou ID..."
         />
       </div>
 
-      <img src="assets/lupa.png" alt="Lupa" class="header-icon lupa-icon" />
+      <img
+        src="assets/lupa.png"
+        alt="Lupa"
+        class="icone-cabecalho icone-lupa"
+      />
     </div>
 
-    <button id="scrollToTopBtn" class="scroll-to-top-btn hidden">
+    <button id="botaoVoltarAoTopo" class="botao-voltar-ao-topo hidden">
       <img src="assets/setacima.png" alt="Voltar ao Topo" />
     </button>
 
-    <div class="pokeContainer" id="pokeContainer"></div>
+    <div class="container-pokemons" id="containerPokemons"></div>
 
-    <div id="pokemonModal" class="modal hidden">
-      <div class="modal-content">
-        <span id="closeModal" class="close-button">&times;</span>
-        <div id="modalInfo"></div>
+    <div id="modalPokemon" class="modal hidden">
+      <div class="conteudo-modal">
+        <span id="botaoFecharModal" class="botao-fechar">&times;</span>
+        <div id="infoModal"></div>
       </div>
     </div>
 
-    <div id="fullMenu" class="fullscreen-menu hidden">
-      <div class="menu-content">
-        <img src="assets/pokebola.png" alt="Menu" class="menu-icon" />
+    <div id="overlayCarregamento" class="overlay-carregamento">
+      <div class="spinner-carregamento"></div>
+      <p class="mensagem-carregamento">Carregando...</p>
+    </div>
 
-        <div class="menu-buttons" id="menuButtonsContainer">
-          <button class="menu-button">Todos</button>
-          <button class="menu-button">Favoritos</button>
-          <button class="menu-button">Gerações</button>
-          <button class="menu-button">Elementos</button>
-          <button class="menu-button">Ordenar por...</button>
-          <button class="menu-button">Estágio Evolutivo</button>
-          <button class="menu-button">Resetar Filtros</button>
+    <div id="menuCompleto" class="menu-tela-cheia hidden">
+      <div class="conteudo-menu">
+        <img src="assets/pokebola.png" alt="Menu" class="icone-menu" />
+
+        <div class="botoes-menu" id="containerBotoesMenu">
+          <button class="botao-menu">Todos</button>
+          <button class="botao-menu">Favoritos</button>
+          <button class="botao-menu">Gerações</button>
+          <button class="botao-menu">Elementos</button>
+          <button class="botao-menu">Ordenar por...</button>
+          <button class="botao-menu">Estágio Evolutivo</button>
+          <button class="botao-menu">Resetar Filtros</button>
         </div>
       </div>
     </div>
