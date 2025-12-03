@@ -36,23 +36,14 @@ O sistema oferece **busca instantânea**, **filtros avançados**, **modal de det
   - Altura (maior/menor)
   - Peso (mais pesado/leve)
 
-### 💾 Estrutura de Dados (JSON)
-O arquivo `pokemons.json` contém todos os dados da aplicação:
+### 💾 Fonte de Dados
 
-```json
-{
-  "id": "001",
-  "nome": "Bulbasaur",
-  "estilo": "grama/venenoso",
-  "infos": {
-    "altura": "0.6m",
-    "peso": "8.5kg",
-    "geracao": 1
-  },
-  "descricao": "A semente em suas costas armazena energia solar...",
-  "evolucoes": ["001", "002", "003"]
-}
-```
+Os dados dos Pokémon não são armazenados em JSON local.
+Toda a informação da aplicação é obtida diretamente da PokéAPI:
+
+🔗 https://pokeapi.co/
+
+A partir dela buscamos dados como nome, tipos, imagens, habilidades, evoluções e demais informações necessárias para o projeto.
 
 ### 🪄 Modal Detalhado
 - Exibe imagem, nome, tipo, altura, peso, geração e descrição  
