@@ -80,7 +80,6 @@ pokomio/
 ├── index.html
 ├── style.css
 ├── script.js
-├── pokemons.json
 └── assets/
     ├── pokebola.png
     ├── lupa.png
