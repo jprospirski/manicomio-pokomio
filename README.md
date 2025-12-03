@@ -1,114 +1,74 @@
-# ⚡ Pokômio – Pokédex Interativa Avançada
+# ⚡ Manicômio Pokômio
 
-## 🧩 Sobre o Projeto
-O **Pokômio** é uma **Pokédex interativa** desenvolvida em **HTML, CSS e JavaScript puro**, que permite explorar Pokémons de forma dinâmica e visualmente envolvente.  
-Cada Pokémon contém **detalhes completos, informações de geração, tipos, altura, peso, descrição e cadeia evolutiva**, com imagens oficiais diretamente da **PokeAPI**.
+> **Pokédex Interativa (SPA) consumindo dados em tempo real da PokéAPI.**
 
-O sistema oferece **busca instantânea**, **filtros avançados**, **modal de detalhes**, **favoritos persistentes** e **menu interativo com múltiplas opções** — tudo salvo localmente no navegador do usuário.
+![Status do Projeto](https://img.shields.io/badge/Status-Finalizado-green) ![API](https://img.shields.io/badge/API-Integada-blue)
 
----
+## 📖 Sobre o Projeto
 
-## 🚀 Funcionalidades Principais
+O **Manicômio Pokômio** é uma aplicação web desenvolvida para explorar o universo Pokémon de forma dinâmica. Diferente de versões anteriores que utilizavam dados estáticos, esta versão final opera como uma **Single Page Application (SPA)** conectada diretamente à **[PokéAPI](https://pokeapi.co/)**.
 
-### 🧭 Navegação e Interface
-- Interface moderna com design **retrô inspirado nos jogos clássicos**
-- **Menu lateral interativo** com múltiplas categorias:
-  - 🔹 Todos  
-  - 🔹 Favoritos  
-  - 🔹 Gerações  
-  - 🔹 Elementos (Tipos)  
-  - 🔹 Estágio Evolutivo  
-  - 🔹 Ordenar por...  
-  - 🔹 Resetar Filtros  
-
-### 🧠 Sistema de Favoritos
-- Adicione ou remova Pokémons dos favoritos clicando na ⭐  
-- Estado salvo automaticamente via **`localStorage`**, garantindo persistência após recarregar ou fechar o navegador
-
-### 🔍 Busca Inteligente
-- Campo de pesquisa com **filtro em tempo real** por **nome ou ID**
-
-### ⚙️ Filtros e Ordenação
-- Filtro por **geração**, **tipo**, ou **estágio evolutivo** (Inicial, Intermediário, Final, Único)  
-- Ordenação dinâmica por:
-  - ID (padrão)
-  - Nome (A–Z / Z–A)
-  - Altura (maior/menor)
-  - Peso (mais pesado/leve)
-
-### 💾 Fonte de Dados
-
-Os dados dos Pokémon não são armazenados em JSON local.
-Toda a informação da aplicação é obtida diretamente da PokéAPI:
-
-🔗 https://pokeapi.co/
-
-A partir dela buscamos dados como nome, tipos, imagens, habilidades, evoluções e demais informações necessárias para o projeto.
-
-### 🪄 Modal Detalhado
-- Exibe imagem, nome, tipo, altura, peso, geração e descrição  
-- Mostra **toda a cadeia evolutiva com imagens clicáveis** para navegar entre evoluções  
-- Contém **gradiente dinâmico** baseado no tipo do Pokémon
-
-### 📱 Responsividade
-- Totalmente otimizado para **desktop, tablet e mobile**  
-- Layout fluido com grid adaptável e menus retráteis
-
-### 🔝 Extras
-- Botão flutuante de **“Voltar ao Topo”**  
-- Gradientes e sombras dinâmicas para dar destaque aos tipos  
-- Animações leves e transições suaves
+Isso significa que todos os dados — estatísticas, tipos, evoluções e sprites — são requisitados em tempo real, garantindo informações sempre atualizadas e sem a necessidade de manter arquivos JSON gigantescos localmente.
 
 ---
 
-## 🧰 Tecnologias Utilizadas
+## 🚀 Funcionalidades
 
-| Tecnologia | Função |
-|-------------|--------|
-| **HTML5** | Estrutura e semântica |
-| **CSS3 (com Google Fonts)** | Estilo retrô e responsividade |
-| **JavaScript (ES6+)** | Lógica, interatividade e manipulação DOM |
-| **JSON** | Base de dados local dos Pokémons |
-| **LocalStorage** | Persistência dos favoritos |
+### 🌐 Integração com API (Backend-less)
+- **Consumo de Dados Dinâmico**: Utilização da Fetch API para buscar informações detalhadas de cada Pokémon sob demanda.
+- **Tratamento de Dados**: Processamento assíncrono para garantir uma interface fluida durante o carregamento das informações.
+
+### 🧠 Experiência do Usuário (UX)
+- **Busca Inteligente**: Pesquise por nome ou ID do Pokémon instantaneamente.
+- **Filtros Avançados**:
+  - Por Geração
+  - Por Tipo (Fogo, Água, Planta, etc.)
+  - Por Estágio Evolutivo
+- **Ordenação**: Classifique a lista por ID, Nome (A-Z/Z-A), Altura ou Peso.
+- **Favoritos Persistentes**: Seus Pokémons favoritos ficam salvos no `localStorage` do navegador, permanecendo lá mesmo após fechar a aba.
+
+### 🎨 Interface (UI)
+- **Design Retrô**: Estilização inspirada nos clássicos jogos de GameBoy.
+- **Modal de Detalhes**: Visualize stats completos, cadeia evolutiva interativa e descrições sem sair da tela principal.
+- **Responsividade**: Layout adaptável para Desktops, Tablets e Smartphones.
 
 ---
 
-## 📂 Estrutura do Projeto
+## 🛠️ Tecnologias Utilizadas
 
-```
-pokomio/
-├── index.html
-├── style.css
-├── script.js
-└── assets/
-    ├── pokebola.png
-    ├── lupa.png
-    ├── setacima.png
-    ├── star-filled.png
-    └── star-empty.png
+O projeto foi construído utilizando os pilares do desenvolvimento web moderno, sem frameworks pesados, focando em performance e lógica pura.
+
+| Tecnologia | Descrição |
+| :--- | :--- |
+| **HTML5** | Estruturação semântica do conteúdo. |
+| **CSS3** | Estilização, variáveis (CSS Variables), Flexbox e Grid Layout. |
+| **JavaScript (ES6+)** | Lógica da aplicação, manipulação do DOM e **Fetch API** para requisições HTTP. |
+| **PokéAPI** | Fonte externa de dados (RESTful API). |
+| **LocalStorage** | Armazenamento local para a funcionalidade de "Favoritos". |
+
+---
+
+## 📂 Estrutura de Arquivos
+
+```text
+manicomio-pokomio/
+├── assets/          # Imagens estáticas (ícones, logos, backgrounds)
+├── docs/            # Documentação auxiliar
+├── index.html       # Ponto de entrada da aplicação
+├── script.js        # Lógica principal e chamadas à API
+├── style.css        # Folhas de estilo
+└── README.md        # Documentação do projeto
 ```
 
----
+## 🤝 Desenvolvedores
 
-## 🧑‍💻 Desenvolvedores
-- Cauã Buch Domingues  
-- Christopher Adam Oliveira dos Santos  
-- João Pedro Rospirski Pegorini  
-- João Rafael Tedesqui  
-- Leonardo Barth  
+Projeto desenvolvido como parte da disciplina de Engenharia de Software.
 
----
-
-## 🏁 Como Executar
-
-1. Baixe ou clone o repositório:
-   ```bash
-   git clone https://github.com/seuusuario/pokomio.git
-   ```
-2. Abra o arquivo `index.html` em qualquer navegador moderno  
-3. Explore, filtre, favorite e descubra Pokémons! ⚡
-
----
+- Cauã Buch Domingues
+- Christopher Adam Oliveira dos Santos
+- João Pedro Rospirski Pegorini
+- João Rafael Tedesqui
+- Leonardo Barth
 
 ## 🧡 Licença
 Este projeto é de uso acadêmico e livre para fins educacionais.  
